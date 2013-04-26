@@ -1,4 +1,5 @@
 /*	File: ui-basic.js
+	Some useful basic ui objects modeled after Core Graphics
 */
 /*	Class: Size
 	Properties:
@@ -6,7 +7,7 @@
 		height - A numeric height value.
 */
 /*	Size(width, height)
-	Contructor
+	Constructor
 
 	Parameters:
 		width - A numeric width value.
@@ -44,7 +45,7 @@ function Size(width, height) {
 		y - A numeric y value.
 */
 /*	Function: Point(x,y)
-	Contructor
+	Constructor
 	
 	Parameters:
 		x - A numeric x value.
@@ -145,7 +146,7 @@ function Point(x,y) {
  		p2 - A Point object end point.
 */
 /*	Function: Line(p1,p2)
-	Contructor
+	Constructor
 	
  	Parameters:
  		p1 - A Point object start point.
