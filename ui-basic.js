@@ -1,7 +1,120 @@
 /*	File: ui-basic.js
 	Some useful basic ui objects modeled after Core Graphics
 */
+
+/*	Class: Point
+	A point has x and y properties and some methods for 2D vector math, including the application of a 2D transformation matrix.
+	
+	Properties:
+		x - A numeric x value.
+		y - A numeric y value.
+*/
+/*	Function: Point(x,y)
+	Constructor
+	
+	Parameters:
+		x - A numeric x value.
+		y - A numeric y value.
+*/
+function Point(x,y) {
+	if (isNaN(x) || isNaN(y))
+		throw new TypeError("Arguments x and y must be numeric.");
+	this.x = x;
+	this.y = y;
+	
+	/*	Function: add(anotherPoint)
+		Get the sum of two 2D vectors.
+	
+		Parameters:
+			anotherPoint - A Point object.
+			
+		Returns:
+			The vector sum as a new Point object.
+	*/
+	this.add = function(anotherPoint){
+		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
+			throw new TypeError("Argument must be an object with x and y properties.");
+		return new Point(anotherPoint.x+this.x, anotherPoint.y+this.y);
+	};
+
+	/*	Function: distance(anotherPoint)
+		Get B-A, where this is A.
+		
+		Parameters:
+			anotherPoint - A Point object.
+			
+		Returns:
+			A vector distance as a new Point object, or null if argument does not have x and y properties. Note that this is not a numeric Euclidean distance, but a difference vector.
+	 */
+	this.distance = function(anotherPoint){
+		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
+			throw new TypeError("Argument must be an object with x and y properties.");
+		return new Point(anotherPoint.x-this.x, anotherPoint.y-this.y);
+	};
+	
+	/*	Function: subtract(anotherPoint)
+		Get A-B, where this is A.
+	
+		Parameters: 
+			anotherPoint - A Point object.
+			
+		Returns: 
+			The vector difference as a new Point object (this minus anotherPoint)
+	*/
+	this.subtract = function(anotherPoint){
+		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
+			throw new TypeError("Argument must be an object with x and y properties.");
+		return new Point(this.x-anotherPoint.x, this.y-anotherPoint.y);
+	};
+	
+	/*	Function: equals(anotherPoint)
+		Check numeric equality of point properties.
+		
+	 	Parameters:
+	 		anotherPoint - A Point object.
+	 		
+	 	Returns:
+	 		boolean True if x and y are equal, otherwise false.
+	*/
+	this.equals = function(anotherPoint) {
+		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
+			throw new TypeError("Argument must be an object with x and y properties.");
+		if (anotherPoint.x != this.x)
+			return false;
+		if (anotherPoint.y != this.y)
+			return false;
+		return true;
+	};
+	
+	/*	Function: negative()
+		Get the negative of this vector.
+	
+		Returns:
+	 		The negative vector of this vector as a new Point object
+	*/
+	this.negative = function(){
+		return new Point(-this.x, -this.y);
+	};
+	
+	/*	Function: applyTransform(matrix)
+		Apply a transformation matrix to this point.
+		
+		Parameters: 
+	 		matrix - A MatrixArray object
+	*/
+	this.applyTransform = function(matrix) {
+		if (!(matrix instanceof MatrixArray))
+			throw new TypeError("Argument must be an instance or subclass of MatrixArray.");
+		var vertex = new MatrixArray(1, 3, [this.x,this.y,1]);
+		var result = vertex.multiply(matrix);
+		this.x = result.pos[0][0];
+		this.y = result.pos[0][1];
+	};
+};
+
 /*	Class: Size
+	A simple object with width and height properties.
+
 	Properties:
 		width - A numeric width value.
 		height - A numeric height value.
@@ -39,108 +152,9 @@ function Size(width, height) {
 	};
 };
 
-/*	Class: Point
-	Properties:
-		x - A numeric x value.
-		y - A numeric y value.
-*/
-/*	Function: Point(x,y)
-	Constructor
-	
-	Parameters:
-		x - A numeric x value.
-		y - A numeric y value.
-*/
-function Point(x,y) {
-	if (isNaN(x) || isNaN(y))
-		throw new TypeError("Arguments x and y must be numeric.");
-	this.x = x;
-	this.y = y;
-	
-	/*	Function: add(anotherPoint)
-		Parameters:
-			anotherPoint - A Point object.
-			
-		Returns:
-			The vector sum as a new Point object.
-	*/
-	this.add = function(anotherPoint){
-		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
-			throw new TypeError("Argument must be an object with x and y properties.");
-		return new Point(anotherPoint.x+this.x, anotherPoint.y+this.y);
-	};
-
-	/*	Function: distance(anotherPoint)
-		
-		Parameters:
-			anotherPoint - A Point object.
-			
-		Returns:
-			A vector distance as a new Point object, or null if argument does not have x and y properties. Note that this is not a numeric Euclidean distance, but a difference vector.
-	 */
-	this.distance = function(anotherPoint){
-		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
-			throw new TypeError("Argument must be an object with x and y properties.");
-		return new Point(anotherPoint.x-this.x, anotherPoint.y-this.y);
-	};
-	
-	/*	Function: subtract(anotherPoint)
-		Parameters: 
-			anotherPoint - A Point object.
-			
-		Returns: 
-			The vector difference as a new Point object (this minus anotherPoint)
-	*/
-	this.subtract = function(anotherPoint){
-		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
-			throw new TypeError("Argument must be an object with x and y properties.");
-		return new Point(this.x-anotherPoint.x, this.y-anotherPoint.y);
-	};
-	
-	/*	Function: equals(anotherPoint)
-		Check numeric equality of point properties.
-		
-	 	Parameters:
-	 		anotherPoint - A Point object.
-	 		
-	 	Returns:
-	 		boolean True if x and y are equal, otherwise false.
-	*/
-	this.equals = function(anotherPoint) {
-		if (!(anotherPoint && anotherPoint.x !== undefined && anotherPoint.y !== undefined))
-			throw new TypeError("Argument must be an object with x and y properties.");
-		if (anotherPoint.x != this.x)
-			return false;
-		if (anotherPoint.y != this.y)
-			return false;
-		return true;
-	};
-	
-	/*	Function: negative()
-		Returns:
-	 		The negative vector of this vector as a new Point object
-	*/
-	this.negative = function(){
-		return new Point(-this.x, -this.y);
-	};
-	
-	/*	Function: applyTransform(matrix)
-		Apply a transformation matrix to this point.
-		
-		Parameters: 
-	 		matrix - A MatrixArray object
-	*/
-	this.applyTransform = function(matrix) {
-		if (!(matrix instanceof MatrixArray))
-			throw new TypeError("Argument must be an instance or subclass of MatrixArray.");
-		var vertex = new MatrixArray(1, 3, [this.x,this.y,1]);
-		var result = vertex.multiply(matrix);
-		this.x = result.pos[0][0];
-		this.y = result.pos[0][1];
-	};
-};
-
 /*	Class: Line
+	A simple line segment object, useful for checking the intersection of two 2D lines.
+
  	Properties:
  		p1 - A Point object start point.
  		p2 - A Point object end point.
@@ -159,18 +173,16 @@ function Line(p1,p2) {
 	this.p2 = p2;
 	
 	/*	Function: intersection(b)
-		Find an itersection with a line or point.
+		Find an itersection with a line.
 		
 	 	Parameters: 
-	 		b - A Line object or a Point object.
+	 		b - A Line object.
 	 		
 	 	Returns:
-	 		A Point object for the intersection, or null if lines are parallel or the line and point do not intersect.
+	 		A Point object for the intersection, or null if lines are parallel.
 	 */
 	this.intersection = function(b) {
-		if (b instanceof Point)
-			b = new Line(this.p1, b);
-		else if (!(b instanceof Line))
+		if (!(b instanceof Line))
 			throw new TypeError("Argument must be a line or a point.");
 		var x1=this.p1.x,x2=this.p2.x,x3=b.p1.x,x4=b.p2.x,
 			y1=this.p1.y,y2=this.p2.y,y3=b.p1.y,y4=b.p2.y,
@@ -184,6 +196,8 @@ function Line(p1,p2) {
 };
 
 /*	Class: Frame
+	An object with origin and size properties. 
+
 	Properties:
 		origin - a Point object
 		size - a Size object
@@ -230,7 +244,7 @@ function Frame(origin, size) {
 	this.isPointInsideFrame = function(point) {
 		if (!(point && point.x !== undefined && point.y !== undefined))
 			throw new TypeError("Argument must be an object with x and y properties.");
-		return (point.x>=this.origin.x&&point.x<=(this.origin.x+this.size.width)&&point.y>=this.origin.y&&point.y<=(this.origin.y+self.this.height));
+		return (point.x>=this.origin.x&&point.x<=(this.origin.x+this.size.width)&&point.y>=this.origin.y&&point.y<=(this.origin.y+this.size.height));
 	};
 	
 	/*	Function: copy()
@@ -614,19 +628,18 @@ function Transform(ax, ay, bx, by, tx, ty) {
 Transform.prototype = MatrixArray.prototype;
 
 /*	Function: Transform.rotationMatrix(theta [, inRadians])
-	Class method for creating a rotation matrix.  Assumes degrees unless specified.
+	Class method for creating a counterclockwise rotation matrix.  Assumes degrees unless specified.
 	
 	Parameters:
 		theta - An angle.
 		inRadians - An optional boolean value. Set to true if you are passing in a radian value.
 		
 	Returns:
-		A new clockwise rotation matrix.
+		A new counterclockwise rotation matrix.
 */
 Transform.rotationMatrix = function(theta) {
-	if (arguments[1] === false || arguments[1] === undefined || arguments[1] === null) {
+	if (!arguments[1])
 		theta = theta*(Math.PI/180);
-	}
 	return new Transform(
 		Math.cos(theta), Math.sin(theta),
 		-Math.sin(theta), Math.cos(theta),
@@ -670,5 +683,5 @@ Transform.scaleMatrix = function(scalar){
 		A 3x3 identity matrix as a Transform object.
 */
 Transform.identityMatrix = function() {
-	return new Transform([1,0,0,1,0,0]);
+	return new Transform(1,0,0,1,0,0);
 };

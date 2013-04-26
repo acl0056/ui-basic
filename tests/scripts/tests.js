@@ -45,11 +45,56 @@ test("Point", function() {
 	
 	point3 = point2.negative();
 	equal(point3.equals({x:-100,y:-900}), true, "negative");
+});
+
+test("Line", function(){
+	var line1 = new Line({x:5,y:0},{x:5,y:10});
+	var line2 = new Line({x:0,y:5},{x:10,y:5});
+	var point = line1.intersection(line2);
+	equal(point.equals({x:5,y:5}), true, "line intersection");
 	
-	
+	line1 = new Line({x:0,y:7},{x:10,y:7});
+	strictEqual(line1.intersection(line2), null, "parallel lines");
+});
+
+test("Frame", function(){
+	var frame1 = new Frame(new Point(0,0),new Size(100,100));
+	var frame2 = Frame.make(0,0,100,200);
+	equal(frame1.equals(frame2), false, "frame equals false");
+	var frame3 = frame1.copy();
+	equal(frame1.equals(frame3), true, "frame equals true");
+	var point = new Point(50,50);
+	equal(frame1.isPointInsideFrame(point), true, "isPointInsideFrame true");
+	point.x = 400;
+	equal(frame1.isPointInsideFrame(point), false, "isPointInsideFrame false");
+	point.x = 50;
+	point.y = 400;
+	equal(frame1.isPointInsideFrame(point), false, "isPointInsideFrame false");
 });
 
 
+test("PointAndTransform", function() {
+	
+	var point = new Point(1, 1);
+	var transform = Transform.scaleMatrix(2);
+	point.applyTransform(transform);
+	equal(point.equals({x:2,y:2}), true, "apply transform");
+	
+	point = new Point(1, 1);
+	transform = Transform.rotationMatrix(90);
+	point.applyTransform(transform);
+	ok(point.x-1 < 0.0001 , "apply rotation x");
+	ok(point.x+1 < 0.0001 , "apply rotation y");
+	
+	point = new Point(1, 1);
+	transform = Transform.translationMatrix({x:10,y:20});
+	point.applyTransform(transform);
+	equal(point.equals({x:11,y:21}), true, "apply translation");
+	
+	transform = Transform.identityMatrix();
+	point.applyTransform(transform);
+	equal(point.equals({x:11,y:21}), true, "apply identity");
+});
 
 test("MatrixArray", function() {
 	
@@ -95,6 +140,6 @@ test("MatrixArray", function() {
 	scale.applyTransform(inv);
 	equal(scale.isIdentityMatrix(),true,"Testing transform.inverse() and applyTransform()");
 	
-	equal(scale.css(),"matrix(1.0000000000000000,0.0000000000000000,0.0000000000000000,1.0000000000000000,0.0000000000000000,0.0000000000000000)","Testing .css()");
+	equal(scale.css(), "matrix(1.0000000000000000,0.0000000000000000,0.0000000000000000,1.0000000000000000,0.0000000000000000,0.0000000000000000)","Testing .css()");
 	
 });
