@@ -343,8 +343,10 @@ function MatrixArray(rows, columns) {
 	};
 	
 	/*	Function: determinant()
+		Get the determinant of a matrix.
+	
 		Returns:
-			Null if not an n by n matrix, otherwise the float determinant value.
+			The float determinant value.
 	*/
 	this.determinant = function() {
 		if (this.rows != this.columns)
@@ -353,8 +355,10 @@ function MatrixArray(rows, columns) {
 	};
 	
 	/*	Function: inverse()
+		Get the inverse of a matrix.
+		
 		Returns:
-			Null if matrix is not invertable, otherwise a new MatrixArray that is the inverse of this MatrixArray object.
+			A new MatrixArray that is the inverse of this MatrixArray object, or null if matrix is not invertable.
 	*/
 	this.inverse = function() {
 		if (this.rows != this.columns)
@@ -588,7 +592,7 @@ function Transform(ax, ay, bx, by, tx, ty) {
 	};
 
 	/*	Function: applyTransform(matrix)
-		Apply this a transformation matrix to this Transform.
+		Apply a transformation matrix to this Transform.
 		
 		Parameters:
 			matrix - Another MatrixArray object or subclass.
@@ -610,7 +614,8 @@ function Transform(ax, ay, bx, by, tx, ty) {
 Transform.prototype = MatrixArray.prototype;
 
 /*	Function: Transform.rotationMatrix(theta [, inRadians])
-	Assumes degrees unless specified.
+	Class method for creating a rotation matrix.  Assumes degrees unless specified.
+	
 	Parameters:
 		theta - An angle.
 		inRadians - An optional boolean value. Set to true if you are passing in a radian value.
@@ -630,6 +635,8 @@ Transform.rotationMatrix = function(theta) {
 };
 
 /* Function: Transform.translationMatrix(vector)
+	Class method for creating a translation matrix.
+	
 	Parameters:
 		vector - An object with x an y properties.
 	
@@ -643,6 +650,7 @@ Transform.translationMatrix = function(vector) {
 };
 
 /*	Function: Transform.scaleMatrix(scalar)
+	Class method for creating a scale matrix.
 	
 	Parameters:
 		scalar - A vector with x and y scalar values.
